@@ -1,0 +1,7 @@
+.idea/
+.terraform/
+.terraform*
+keypair
+keypair.pub
+terraform.tfstate
+terraform.tfstate.backup
