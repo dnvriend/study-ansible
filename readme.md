@@ -285,6 +285,47 @@ ansible-playbook [core 2.13.2]
   libyaml = False
 ```
 
-## Configuration
+## using a bastion to ping the instances
 
+Put the following `ssh-config` in your ansible directory
 
+```
+Host bastion
+  HostName 35.158.93.136
+  AddKeysToAgent yes
+  ForwardAgent yes
+  StrictHostKeyChecking no
+  UserKnownHostsFile=/dev/null
+  ServerAliveInterval 60
+  User ec2-user
+  IdentityFile ../00-create-ec2/keypair
+
+Host ec2-3-66-86-172.eu-central-1.compute.amazonaws.com
+    Hostname ec2-3-66-86-172.eu-central-1.compute.amazonaws.com
+    User ec2-user
+    IdentityFile ../00-create-ec2/keypair
+    ProxyJump bastion
+
+Host ec2-3-71-115-136.eu-central-1.compute.amazonaws.com
+    Hostname ec2-3-71-115-136.eu-central-1.compute.amazonaws.com
+    User ec2-user
+    IdentityFile ../00-create-ec2/keypair
+    ProxyJump bastion
+```
+
+Next update the `ansible.cfg` file so that it uses this config:
+
+```
+[ssh_connection]
+ssh_args = -F ./ssh-config
+```
+
+Now you can use the following command only:
+
+```shell
+ansible-playbook ping-playbook.yml
+```
+
+## Resources
+- 
+- [ssh-common-args](https://docs.ansible.com/ansible/latest/cli/ansible.html#cmdoption-ansible-ssh-common-args)
